@@ -21,6 +21,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+
+    const taskCollections = client.db("taskDB").collection("tasks");
+
+    app.post("/add-task", async (req, res) => {
+        const task = req.body;
+      
+        const result = await taskCollections.insertOne(task);
+        res.send(result);
+      });
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
@@ -30,7 +39,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
