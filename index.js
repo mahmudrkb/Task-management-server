@@ -30,6 +30,13 @@ async function run() {
         const result = await taskCollections.insertOne(task);
         res.send(result);
       });
+
+      app.get("/show-task/:email", async (req, res) => {
+        const email = req.params.email;
+        const query = { email : email };
+        const result = await taskCollections.find(query).toArray();
+        res.send(result);
+      });
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
