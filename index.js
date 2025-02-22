@@ -21,30 +21,50 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
     const taskCollections = client.db("taskDB").collection("tasks");
 
     app.post("/add-task", async (req, res) => {
-        const task = req.body;
-      
-        const result = await taskCollections.insertOne(task);
-        res.send(result);
-      });
+      const task = req.body;
 
-      app.get("/show-task/:email", async (req, res) => {
-        const email = req.params.email;
-        const query = { email : email };
-        const result = await taskCollections.find(query).toArray();
-        res.send(result);
-      });
+      const result = await taskCollections.insertOne(task);
+      res.send(result);
+    });
 
-      
+    app.get("/show-task/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await taskCollections.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/task-details/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await taskCollections.findOne(query);
+      res.send(result);
+    });
+
+  
+
+    //  task update
+    app.patch("/update-task/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const task = req.body;
+      const option = { upsert: true };
+      const updateDoc = {
+        $set: task,
+      };
+      const result = await taskCollections.updateOne(query, updateDoc, option);
+      res.send(result);
+    });
+
     // delete task
     app.delete("/delete-task/:id", async (req, res) => {
       const id = req.params.id;
-     
-      const query = { _id: new ObjectId(id)};
-     
+
+      const query = { _id: new ObjectId(id) };
+
       const result = await taskCollections.deleteOne(query);
       res.send(result);
     });
